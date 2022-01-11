@@ -1,11 +1,94 @@
-# Vue 3 + Typescript + Vite
+# 環境設置 
+## linter
+`.eslintrc`
+```json
+{
+  "root": true,
+  "env": {
+      "browser": true,
+      "es2021": true,
+      "node": true
+  },
+  "extends": [
+    "plugin:vue/vue3-recommended",
+    "eslint:recommended",
+    "@vue/typescript/recommended",
+    "@vue/prettier",
+    "@vue/prettier/@typescript-eslint"
+  ],
+  "parserOptions": {
+    "ecmaVersion": 2021
+  },
+  "rules": {},
+}
+```
 
-This template should help get you started developing with Vue 3 and Typescript in Vite. The template uses Vue 3 `<script setup>` SFCs, check out the [script setup docs](https://v3.vuejs.org/api/sfc-script-setup.html#sfc-script-setup) to learn more.
+`.prettierrc`
+```json
+{
+  "singleQuote": true,
+  "semi": false,
+  "formatOnSave": true,
+  "endOfLine": "auto",
+  "tabWidth": 2
+}
 
-## Recommended IDE Setup
+```
 
-- [VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=johnsoncodehk.volar)
+# 安裝套件
+## vue-router@next
+ 1. 安裝 `npm install vue-router@4`
+ 2. 建立 src/router/index.ts
+ 3. 修改 main.js 加入 router middleware
+ 4. 在App.vue 加入 <router-view></router-view>
+ 5. 加入 router-link
+ `src/router/index.ts`
+ ```typescript
+import { createRouter, createWebHashHistory } from "vue-router"
 
-## Type Support For `.vue` Imports in TS
+const Temp = { template: '<div>Temp</div>' }
 
-Since TypeScript cannot handle type information for `.vue` imports, they are shimmed to be a generic Vue component type by default. In most cases this is fine if you don't really care about component prop types outside of templates. However, if you wish to get actual prop types in `.vue` imports (for example to get props validation when using manual `h(...)` calls), you can enable Volar's `.vue` type support plugin by running `Volar: Switch TS Plugin on/off` from VSCode command palette.
+const routes = [
+	// router引數詳細看下文
+	{
+		path: "/home",
+		name: "home",
+		component: Temp
+	},
+	{
+		path: "/user/:uid",  // 動態引數
+		name: "user",
+		component: Temp
+	},
+]
+export const router = createRouter({
+	history: createWebHashHistory(),
+	routes: routes
+})
+ ```
+ `main.js`
+ ``` typescript
+import { createApp } from 'vue'
+import App from './App.vue'
+import { router } from './router'
+import "bootstrap/dist/css/bootstrap.min.css"
+
+const app = createApp(App)
+app.use(router)
+app.mount('#app')
+ ```
+## 其他已安裝
+ - axios (axios provides its own type definitions, so you don't need @types/axios installed!)
+  `npm i axios`
+ - bootstrap   
+   `npm i bootstrap @types/bootstrap`
+ - lodash   
+   `npm i lodash @types/lodash`
+
+## 還沒安裝
+ - d3(@types?)   
+   `npm i d3`
+
+
+# Reference
+ - https://iter01.com/652769.html

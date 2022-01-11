@@ -1,0 +1,7 @@
+{
+  "singleQuote": true,
+  "semi": false,
+  "formatOnSave": true,
+  "endOfLine": "auto",
+  "tabWidth": 2
+}
