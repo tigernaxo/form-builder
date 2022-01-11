@@ -6,9 +6,13 @@ import AppNavbarVue from './AppNavbar.vue';
 </script>
 
 <template>
-  <AppNavbarVue />
-  <div class="container-fluid">
+<div class="d-flex flex-column h-100">
+  <div class="flex-shrink-1">
+    <AppNavbarVue />
+  </div>
+  <div class="flex-grow-1">
     <router-view></router-view>
+  </div>
 </div>
 </template>
 

@@ -80,7 +80,7 @@ app.mount('#app')
 ## 其他已安裝
  - axios (axios provides its own type definitions, so you don't need @types/axios installed!)
   `npm i axios`
- - bootstrap   
+ - [bootstrap](https://getbootstrap.com/)   
    `npm i bootstrap @types/bootstrap`
  - lodash   
    `npm i lodash @types/lodash`

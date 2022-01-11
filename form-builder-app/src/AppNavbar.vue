@@ -1,27 +1,12 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary"  style="--bs-bg-opacity: .8;">
     <div class="container-fluid">
       <a class="navbar-brand"  to="/" href="#">EZ Form</a>
       <div class="collapse navbar-collapse">
         <ul class="navbar-nav">
-          <li class="nav-item">
-            <router-link to="/admin">
-              <a class="nav-link" href="#">Admin</a>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/builder">
-              <a class="nav-link" href="#">Builder</a>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/about">
-              <a class="nav-link" href="#">About</a>
-            </router-link>
-          </li>
-          <li class="nav-item">
-            <router-link to="/user/1">
-              <a class="nav-link" href="#">User</a>
+          <li class="nav-item" v-for="(menu, idx) in menus" :key="idx">
+            <router-link :to="menu.to">
+              <a class="nav-link" href="#">{{ menu.title }}</a>
             </router-link>
           </li>
         </ul>
@@ -31,10 +16,12 @@
 </template>
 
 <script setup lang="ts">
-
-import { ref } from 'vue'
-const count = ref(0)
-
+const menus = [
+  {to: '/admin', title: 'Admin'},
+  {to: '/builder', title: 'Builder'},
+  {to: '/about', title: 'About'},
+  {to: '/user/1', title: 'User'},
+]
 </script>
 
 <style scoped>
