@@ -10,10 +10,11 @@ import AppNavbarVue from './AppNavbar.vue';
   <div class="flex-shrink-1">
     <AppNavbarVue />
   </div>
-  <div class="flex-grow-1">
+  <div class="flex-grow-1" style="min-height: 0;">
     <router-view></router-view>
   </div>
 </div>
+
 </template>
 
 <style>
