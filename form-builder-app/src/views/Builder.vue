@@ -1,7 +1,8 @@
 <template>
-	<div class="row align-items-start h-100">
+	<div class="row align-items-start h-100 g-0">
     <div class="col-2 h-100 bg-primary">
-      One of three columns
+      <div class="container"></div>
+        One of three columns
     </div>
     <div class="col h-100">
       One of three columns
