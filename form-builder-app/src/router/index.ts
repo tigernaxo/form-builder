@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from "vue-router"
 
 import Home from '../views/Home.vue'
 import Admin from '../views/Admin.vue'
-import Builder from '../views/Builder.vue'
+import Builder from '../views/Builder/Index.vue'
 import Temp from '../views/Temp.vue'
 import About from '../views/About.vue'
 // const Temp = { template: '<div>Temp</div>' }
