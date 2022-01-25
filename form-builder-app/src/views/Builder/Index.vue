@@ -59,16 +59,21 @@ let dragoverHandler= throttle(function(e: DragEvent){
 
 function dropHandler(e: DragEvent){
   console.log('drop',  e)
-  let targetEl = <HTMLElement>e.target // 目標元件(畫布)
+  // let targetEl = <HTMLElement>e.target // 目標元件(畫布)
+  let targetEl = document.getElementById('convas'); // 目標元件(畫布)
   let template = (<HTMLElement>eDrag.target) // 要複製的元素
 
   // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
   let {x: templateX, y: templateY} = template.getBoundingClientRect()
-  let {x: targetX, y: targetY} = targetEl.getBoundingClientRect();
+  let {x: targetX, y: targetY} = <DOMRect>(targetEl?.getBoundingClientRect());
   let {clientX: endX, clientY: endY} = e // 取得滑鼠游標一開始的位置
   let {clientX: startX, clientY: startY } = eDrag // 取得滑鼠游標釋放的位置
   let finalX =  (endX - startX) + templateX - targetX
   let finalY =  (endY - startY) + templateY - targetY
+  console.log(`startX, startY`, startX, startY)
+  console.log(`endX, endY`, endX, endY)
+  console.log(`templateX, templateY`, templateX, templateY)
+  console.log(`targetX, targetY`, targetX, targetY)
 
   // 新增複製的元素
   let cloneEl = <HTMLElement>clonNode
@@ -84,6 +89,7 @@ function dropHandler(e: DragEvent){
   // todo 版次控制
   // todo 預覽電腦版、手機板
   // todo 產生 pdf
+  // todo 依據先來後到設定 z-index
 }
 function monk(e: DragEvent, str: string){
 }
