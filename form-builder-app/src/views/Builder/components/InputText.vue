@@ -1,6 +1,6 @@
 <template>
   <div>
-    this is a Text input 
+    {{text}}
   </div>
 </template>
 
@@ -10,6 +10,7 @@ const test  = ()=> console.log('text input test function')
 
 // script setup 裡面的宣告預設不會 expose
 defineExpose({test})
+defineProps({text: String})
 
 
 </script>

@@ -2,7 +2,8 @@
 	<div class="row g-0 area-root">
     <div class="col-2 container area-component">
       <div>
-        <input-text ref="inputText" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
+        <input-text text="inputText" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
+        <input-text text="inputText1" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
         <x-q-input :type="'text'" :placeholder="'placeholderabc'"></x-q-input>
       </div>
     </div>
@@ -58,6 +59,7 @@ let dragoverHandler= throttle(function(e: DragEvent){
 }, 150)
 
 function dropHandler(e: DragEvent){
+  console.log('drag',  eDrag)
   console.log('drop',  e)
   // let targetEl = <HTMLElement>e.target // 目標元件(畫布)
   let targetEl = document.getElementById('convas'); // 目標元件(畫布)
