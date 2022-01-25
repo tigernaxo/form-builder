@@ -2,18 +2,19 @@
 	<div class="row g-0 area-root">
     <div class="col-2 container area-component">
       <div>
-        <input-text text="inputText" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
+        <input-text ref="inputText" text="inputText" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
         <input-text text="inputText1" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
         <x-q-input :type="'text'" :placeholder="'placeholderabc'"></x-q-input>
       </div>
     </div>
     <div class="col-8 container area-edit">
       <div class="mx-auto my-auto" id="convas" droppable="true" 
+        @click="clickHandler($event)"
         @drop="dropHandler($event)" 
         @dragover.prevent="dragoverHandler($event)"
         @dragleave="monk($event, 'dragleave')" 
         @dragenter.prevent 
-      > 排版區 </div>
+      >  </div>
     </div>
     <div class="col-2 area-property container">
       元件編輯區
@@ -42,10 +43,25 @@ import XQInput from '../../components/xQInput.vue'
 let inputText = ref<InstanceType<typeof InputText>>()
 
 let eDrag: DragEvent // 抓取事件
+let startX: number=0
+let startY: number=0
 let clonNode: Node // 要被複製的元素
 
+function clickHandler(e: MouseEvent) {
+  let {x, y} = e
+  console.log(x, y)
+  
+}
 function dragstartHandler(e: DragEvent){
+  console.log('dragStart+++')
+  console.log(inputText.value)
+  inputText.value?.test()
+  inputText.value?.test1()
+  inputText.value?.testGet()
+  console.log('dragStart===')
   eDrag = e
+  startX = e.x
+  startY = e.y
   clonNode = (<Node>e.target)?.cloneNode(true);
   let el = <HTMLElement>e.target;
   e.dataTransfer?.setData("text/plain", el.id);
@@ -53,10 +69,11 @@ function dragstartHandler(e: DragEvent){
 }
 
 // throttle 效能
-let dragoverHandler= throttle(function(e: DragEvent){
-  e.dataTransfer!.dropEffect = "copy"
-  console.log(e.dataTransfer?.dropEffect)
-}, 150)
+let dragoverHandler= function(e: DragEvent){}
+// let dragoverHandler= throttle(function(e: DragEvent){
+//   e.dataTransfer!.dropEffect = "copy"
+//   // console.log(e.dataTransfer?.dropEffect)
+// }, 50)
 
 function dropHandler(e: DragEvent){
   console.log('drag',  eDrag)
@@ -68,14 +85,17 @@ function dropHandler(e: DragEvent){
   // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
   let {x: templateX, y: templateY} = template.getBoundingClientRect()
   let {x: targetX, y: targetY} = <DOMRect>(targetEl?.getBoundingClientRect());
-  let {clientX: endX, clientY: endY} = e // 取得滑鼠游標一開始的位置
-  let {clientX: startX, clientY: startY } = eDrag // 取得滑鼠游標釋放的位置
+  let {clientX: endX, clientY: endY} = e // 取得滑鼠游標釋放的位置
+  let {offsetX, offsetY} = e // 取得滑鼠游標釋放的位置(相對於drop目標元素)
+  // let {clientX: startX, clientY: startY } = eDrag // 取得滑鼠游標一開始的位置
   let finalX =  (endX - startX) + templateX - targetX
   let finalY =  (endY - startY) + templateY - targetY
   console.log(`startX, startY`, startX, startY)
   console.log(`endX, endY`, endX, endY)
+  console.log(`offsetX, offsetY`, offsetX, offsetY)
   console.log(`templateX, templateY`, templateX, templateY)
   console.log(`targetX, targetY`, targetX, targetY)
+  console.log(`finalX, finalY`, finalX, finalY)
 
   // 新增複製的元素
   let cloneEl = <HTMLElement>clonNode
