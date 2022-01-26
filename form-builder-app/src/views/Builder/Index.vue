@@ -5,6 +5,7 @@
         <!-- <input-text text="inputText" draggable="true" @dragstart="dragInfo.isTemplate = true; dragstartHandler($event)"></input-text>
         <input-text text="inputText1" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
         <x-q-input :type="'text'" :placeholder="'placeholderabc'"></x-q-input> -->
+          <ques-input draggable="true" @dragstart="TempEl.onDragStart($event)"></ques-input>
       </div>
     </div>
     <div class="col-8 container area-edit">
@@ -33,7 +34,7 @@
 import { throttle } from 'lodash'
 import InputText from './components/InputText.vue'
 import {reactive, ref} from 'vue'
-import { QuesType } from './components/QuesCommon'
+import { IQuesConfig, QuesType } from './components/QuesCommon'
 import QuesInput from './components/QuesInput.vue';
 // To change that behavior so that an element becomes a drop zone or is droppable, 
 // the element must have both ondragover (en-US) and ondrop (en-US) event handler attributes. 
@@ -55,12 +56,36 @@ let dragInfo = reactive ({
   isTemplate: false,
 })
 
+let TempEl = {
+  onDragStart: (e: DragEvent)=>{
+    dragInfo.isTemplate = true
+    eDragStart = e
+  },
+  onDrop:(e: DragEvent)=>{
+    console.log('TempEl===')
+    console.log('drag',  eDragStart)
+    console.log('drop',  e)
+    let targetEl = <HTMLElement>e.target // 目標元件(畫布)
+    let convasEl = document.getElementById('convas'); // 目標元件(畫布)
+    let template = (<HTMLElement>eDragStart.target) // 要複製的元素
+
+    // // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
+    let {x: templateX, y: templateY} = template.getBoundingClientRect() // 取得移動元素的定位
+    let {x: convasX, y: convasY} = <DOMRect>(convasEl?.getBoundingClientRect()); // 取得 convas 的定位
+    let {pageX: endX, pageY: endY} = e // 取得滑鼠游標一釋放的定位
+    let {pageX: startX, pageY: startY } = eDragStart // 取得滑鼠游標一開始的定位
+    let finalX =  (endX - startX) + templateX - convasX // 計算元素最後的 x 座標
+    let finalY =  (endY - startY) + templateY - convasY // 計算元素最後的 y 座標
+    // console.log(`startX, startY`, startX, startY)
+
+    OperEl.itemList.push({Type: QuesType.Input, top: `${finalY}px`,left: `${finalX}px`});
+  }
+}
 let OperEl = {
-  itemList: reactive(new Array<any>()), // 清單
+  itemList: reactive(new Array<IQuesConfig>()), // 清單
   onDragStart: (e: DragEvent)=>{
     dragInfo.isTemplate = false
     eDragStart = e
-    let el = <HTMLElement>e.target;
   },
   onDrop:(e: DragEvent) => {
     console.log('drag',  eDragStart)
@@ -72,8 +97,8 @@ let OperEl = {
     // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
     let {x: templateX, y: templateY} = template.getBoundingClientRect() // 取得移動元素的定位
     let {x: convasX, y: convasY} = <DOMRect>(convasEl?.getBoundingClientRect()); // 取得 convas 的定位
-    let {pageX: endX, pageY: endY} = e // 取得滑鼠游標一釋放的定位
-    let {pageX: startX, pageY: startY } = eDragStart // 取得滑鼠游標一開始的定位
+    let { pageX: endX, pageY: endY} = e // 取得滑鼠游標一釋放的定位
+    let { pageX: startX, pageY: startY } = eDragStart // 取得滑鼠游標一開始的定位
     let finalX =  (endX - startX) + templateX - convasX // 計算元素最後的 x 座標
     let finalY =  (endY - startY) + templateY - convasY // 計算元素最後的 y 座標
     // console.log(`startX, startY`, startX, startY)
@@ -96,17 +121,13 @@ let OperEl = {
     // todo 依據先來後到設定 z-index
   }
 }
-OperEl.itemList.push({Type: QuesType.Input})
-OperEl.itemList.push({Type: QuesType.Input})
-OperEl.itemList.push({Type: QuesType.Input})
-OperEl.itemList.push({Type: QuesType.Input})
 
 let Convas = {
   onDragover: throttle(function(e: DragEvent){
     // e.dataTransfer!.dropEffect = "copy"
   }, 200),
   onDrop: (e: DragEvent)=>{
-    dragInfo.isTemplate ? '' : OperEl.onDrop(e)
+    dragInfo.isTemplate ? TempEl.onDrop(e) : OperEl.onDrop(e)
   }
 }
 

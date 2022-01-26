@@ -1,7 +1,10 @@
 export enum QuesType { Input }
 export interface IQuesConfig {
-  Type: QuesType
+  Type: QuesType,
+  top: string,
+  left: string,
 }
+
 export function test(){
   console.log('test in part')
 }
@@ -10,6 +13,8 @@ export function testGet(this: any){
 }
 export function GetConfig(this: any): IQuesConfig{
   return {
-    Type: QuesType.Input
+    Type: QuesType.Input,
+    top: '',
+    left: ''
   }
 }
