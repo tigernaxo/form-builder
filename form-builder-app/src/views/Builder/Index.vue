@@ -2,22 +2,28 @@
 	<div class="row g-0 area-root">
     <div class="col-2 container area-component">
       <div>
-        <input-text ref="inputText" text="inputText" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
+        <!-- <input-text text="inputText" draggable="true" @dragstart="dragInfo.isTemplate = true; dragstartHandler($event)"></input-text>
         <input-text text="inputText1" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
-        <x-q-input :type="'text'" :placeholder="'placeholderabc'"></x-q-input>
+        <x-q-input :type="'text'" :placeholder="'placeholderabc'"></x-q-input> -->
       </div>
     </div>
     <div class="col-8 container area-edit">
       <div class="mx-auto my-auto" id="convas" droppable="true" 
-        @click="clickHandler($event)"
-        @drop="dropHandler($event)" 
-        @dragover.prevent="dragoverHandler($event)"
+        @drop="Convas.onDrop($event)" 
+        @dragover.prevent="Convas.onDragover($event)"
         @dragleave="monk($event, 'dragleave')" 
         @dragenter.prevent 
-      >  </div>
+      > 
+      <!-- 這裡的 dragstart 要跟 template 區塊的分開，這裡不做複製 -->
+      <template v-for="(item, idx) in OperEl.itemList" :key="idx">
+        <template v-if="item.Type === QuesType.Input">
+          <ques-input draggable="true" @dragstart="OperEl.onDragStart($event)" :config="item"></ques-input>
+        </template>
+      </template>
+      </div>
     </div>
     <div class="col-2 area-property container">
-      元件編輯區
+      元件編輯區 {{dragInfo}}
     </div>
   </div>
 
@@ -26,9 +32,9 @@
 <script setup lang="ts">
 import { throttle } from 'lodash'
 import InputText from './components/InputText.vue'
-import {HtmlHTMLAttributes, ref} from 'vue'
-import xQInput from '../../components/xQInput.vue'
-import XQInput from '../../components/xQInput.vue'
+import {reactive, ref} from 'vue'
+import { QuesType } from './components/QuesCommon'
+import QuesInput from './components/QuesInput.vue';
 // To change that behavior so that an element becomes a drop zone or is droppable, 
 // the element must have both ondragover (en-US) and ondrop (en-US) event handler attributes. 
 // https://stackoverflow.com/questions/63063312/why-doesnt-the-drop-event-work-for-me-in-vue
@@ -40,79 +46,72 @@ import XQInput from '../../components/xQInput.vue'
 // node proccessing(copy, moving... etc) must be done by self
 
 // Note: ref component 型別的方法，這樣可以呼叫元件 expose 的方法
-let inputText = ref<InstanceType<typeof InputText>>()
+// let inputText = ref<InstanceType<typeof InputText>>()
 
-let eDrag: DragEvent // 抓取事件
-let startX: number=0
-let startY: number=0
-let clonNode: Node // 要被複製的元素
 
-function clickHandler(e: MouseEvent) {
-  let {x, y} = e
-  console.log(x, y)
-  
+let eDragStart: DragEvent // 抓取事件
+let dragInfo = reactive ({
+  dragStartEvent: null,
+  isTemplate: false,
+})
+
+let OperEl = {
+  itemList: reactive(new Array<any>()), // 清單
+  onDragStart: (e: DragEvent)=>{
+    dragInfo.isTemplate = false
+    eDragStart = e
+    let el = <HTMLElement>e.target;
+  },
+  onDrop:(e: DragEvent) => {
+    console.log('drag',  eDragStart)
+    console.log('drop',  e)
+    // let targetEl = <HTMLElement>e.target // 目標元件(畫布)
+    let convasEl = document.getElementById('convas'); // 目標元件(畫布)
+    let template = (<HTMLElement>eDragStart.target) // 要複製的元素
+
+    // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
+    let {x: templateX, y: templateY} = template.getBoundingClientRect() // 取得移動元素的定位
+    let {x: convasX, y: convasY} = <DOMRect>(convasEl?.getBoundingClientRect()); // 取得 convas 的定位
+    let {pageX: endX, pageY: endY} = e // 取得滑鼠游標一釋放的定位
+    let {pageX: startX, pageY: startY } = eDragStart // 取得滑鼠游標一開始的定位
+    let finalX =  (endX - startX) + templateX - convasX // 計算元素最後的 x 座標
+    let finalY =  (endY - startY) + templateY - convasY // 計算元素最後的 y 座標
+    // console.log(`startX, startY`, startX, startY)
+    // console.log(`endX, endY`, endX, endY)
+    // console.log(`templateX, templateY`, templateX, templateY)
+    // console.log(`convasX, convasY`, convasX, convasY)
+
+    // 新增複製的元素
+      template.style.position="absolute";
+      template.style.left = `${finalX}px`;
+      template.style.top = `${finalY}px`;
+
+    // todo 從 component 要設定的資料，由資料加入[頁面元素設定 list]
+    // todo 由[頁面元素設定 list]渲染頁面
+    // todo 由[頁面元素設定 list]產生資料
+    // todo 點選元件出現設定視窗(製作 ques template 有元件 click 事件，屬性視窗)
+    // todo 版次控制
+    // todo 預覽電腦版、手機板
+    // todo 產生 pdf
+    // todo 依據先來後到設定 z-index
+  }
 }
-function dragstartHandler(e: DragEvent){
-  console.log('dragStart+++')
-  console.log(inputText.value)
-  inputText.value?.test()
-  inputText.value?.test1()
-  inputText.value?.testGet()
-  console.log('dragStart===')
-  eDrag = e
-  startX = e.x
-  startY = e.y
-  clonNode = (<Node>e.target)?.cloneNode(true);
-  let el = <HTMLElement>e.target;
-  e.dataTransfer?.setData("text/plain", el.id);
-  e.dataTransfer!.effectAllowed = "copy";
+OperEl.itemList.push({Type: QuesType.Input})
+OperEl.itemList.push({Type: QuesType.Input})
+OperEl.itemList.push({Type: QuesType.Input})
+OperEl.itemList.push({Type: QuesType.Input})
+
+let Convas = {
+  onDragover: throttle(function(e: DragEvent){
+    // e.dataTransfer!.dropEffect = "copy"
+  }, 200),
+  onDrop: (e: DragEvent)=>{
+    dragInfo.isTemplate ? '' : OperEl.onDrop(e)
+  }
 }
 
 // throttle 效能
-let dragoverHandler= function(e: DragEvent){}
-// let dragoverHandler= throttle(function(e: DragEvent){
-//   e.dataTransfer!.dropEffect = "copy"
-//   // console.log(e.dataTransfer?.dropEffect)
-// }, 50)
 
-function dropHandler(e: DragEvent){
-  console.log('drag',  eDrag)
-  console.log('drop',  e)
-  // let targetEl = <HTMLElement>e.target // 目標元件(畫布)
-  let targetEl = document.getElementById('convas'); // 目標元件(畫布)
-  let template = (<HTMLElement>eDrag.target) // 要複製的元素
-
-  // 計算元素應該在的位置 // 游標經過的量好像不是釋放時 DragEvent 的 offset 
-  let {x: templateX, y: templateY} = template.getBoundingClientRect()
-  let {x: targetX, y: targetY} = <DOMRect>(targetEl?.getBoundingClientRect());
-  let {clientX: endX, clientY: endY} = e // 取得滑鼠游標釋放的位置
-  let {offsetX, offsetY} = e // 取得滑鼠游標釋放的位置(相對於drop目標元素)
-  // let {clientX: startX, clientY: startY } = eDrag // 取得滑鼠游標一開始的位置
-  let finalX =  (endX - startX) + templateX - targetX
-  let finalY =  (endY - startY) + templateY - targetY
-  console.log(`startX, startY`, startX, startY)
-  console.log(`endX, endY`, endX, endY)
-  console.log(`offsetX, offsetY`, offsetX, offsetY)
-  console.log(`templateX, templateY`, templateX, templateY)
-  console.log(`targetX, targetY`, targetX, targetY)
-  console.log(`finalX, finalY`, finalX, finalY)
-
-  // 新增複製的元素
-  let cloneEl = <HTMLElement>clonNode
-  cloneEl.style.position="absolute";
-  cloneEl.style.top = `${finalY}px`;
-  cloneEl.style.left = `${finalX}px`;
-  document.getElementById('convas')?.appendChild(clonNode);
-
-  // todo 從 component 要設定的資料，由資料加入[頁面元素設定 list]
-  // todo 由[頁面元素設定 list]渲染頁面
-  // todo 由[頁面元素設定 list]產生資料
-  // todo 點選元件出現設定視窗(製作 ques template 有元件 click 事件，屬性視窗)
-  // todo 版次控制
-  // todo 預覽電腦版、手機板
-  // todo 產生 pdf
-  // todo 依據先來後到設定 z-index
-}
 function monk(e: DragEvent, str: string){
 }
 </script>
