@@ -1,8 +1,13 @@
+import {Ref} from 'vue'
+import InputText from './components/InputText.vue'
+
 export enum QuesType { Input }
 export interface IQuesConfig {
   Type: QuesType,
   top: string,
   left: string,
+  id?: string,
+  ref?: Ref<InstanceType<typeof InputText>>
 }
 
 export function test(){

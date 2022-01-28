@@ -18,7 +18,7 @@
       <!-- 這裡的 dragstart 要跟 template 區塊的分開，這裡不做複製 -->
       <template v-for="(item, idx) in OperEl.itemList" :key="idx">
         <template v-if="item.Type === QuesType.Input">
-          <ques-input draggable="true" @dragstart="OperEl.onDragStart($event)" :config="item"></ques-input>
+          <ques-input :fb-id="`${item.id}`" :ref="refArr[parseInt(item.id||'-1')]" draggable="true" @dragstart="OperEl.onDragStart($event)" :config="item"></ques-input>
         </template>
       </template>
       </div>
@@ -33,7 +33,7 @@
 <script setup lang="ts">
 import { throttle } from 'lodash'
 import InputText from './components/InputText.vue'
-import {reactive, ref} from 'vue'
+import {reactive, Ref, ref} from 'vue'
 import { IQuesConfig, QuesType } from './components/QuesCommon'
 import QuesInput from './components/QuesInput.vue';
 // To change that behavior so that an element becomes a drop zone or is droppable, 
@@ -48,6 +48,7 @@ import QuesInput from './components/QuesInput.vue';
 
 // Note: ref component 型別的方法，這樣可以呼叫元件 expose 的方法
 // let inputText = ref<InstanceType<typeof InputText>>()
+// let arr: Array<Ref<InstanceType<typeof InputText>>> = []
 
 
 let eDragStart: DragEvent // 抓取事件
@@ -78,9 +79,17 @@ let TempEl = {
     let finalY =  (endY - startY) + templateY - convasY // 計算元素最後的 y 座標
     // console.log(`startX, startY`, startX, startY)
 
-    OperEl.itemList.push({Type: QuesType.Input, top: `${finalY}px`,left: `${finalX}px`});
+    let elRef = ref<InstanceType<typeof InputText>>()
+    OperEl.itemList.push({
+        Type: QuesType.Input, 
+        id: `${refArr.length}`, 
+        ref: elRef,
+        top: `${finalY}px`,left: `${finalX}px`
+      });
+    refArr.push(elRef)
   }
 }
+let refArr: Array<Ref<InstanceType<typeof InputText>>> = []
 let OperEl = {
   itemList: reactive(new Array<IQuesConfig>()), // 清單
   onDragStart: (e: DragEvent)=>{
@@ -90,6 +99,8 @@ let OperEl = {
   onDrop:(e: DragEvent) => {
     console.log('drag',  eDragStart)
     console.log('drop',  e)
+    // 這裡要拿到 target.config 才能更新
+    // console.log('target.config',  e.target.config)
     // let targetEl = <HTMLElement>e.target // 目標元件(畫布)
     let convasEl = document.getElementById('convas'); // 目標元件(畫布)
     let template = (<HTMLElement>eDragStart.target) // 要複製的元素
@@ -110,6 +121,12 @@ let OperEl = {
       template.style.position="absolute";
       template.style.left = `${finalX}px`;
       template.style.top = `${finalY}px`;
+
+      let fbId = template.getAttribute('fb-id')
+      console.log('cal config', fbId)
+      console.log(refArr)
+      var ref = refArr[parseInt(fbId || '-1')]
+      console.log('ref.value:',ref.value)
 
     // todo 從 component 要設定的資料，由資料加入[頁面元素設定 list]
     // todo 由[頁面元素設定 list]渲染頁面
