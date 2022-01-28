@@ -19,6 +19,7 @@
 const menus = [
   {to: '/admin', title: 'Admin'},
   {to: '/builder', title: 'Builder'},
+  {to: '/builder2', title: 'Builder2'},
   {to: '/about', title: 'About'},
   {to: '/user/1', title: 'User'},
 ]
