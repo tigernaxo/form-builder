@@ -7,7 +7,7 @@
 
 <script setup lang="ts">
 import {onMounted,defineExpose, ref} from 'vue'
-import { GetConfig, IQuesConfig } from './QuesCommon'
+import { IQues, IQuesConfig } from './QuesCommon'
 
 const props = defineProps({text: String, config: Object})
 // import THIS from './QuesInput.vue'
@@ -16,8 +16,8 @@ let rootRef = ref<HTMLDivElement>()
 onMounted(() => {
   if(rootRef.value && props.config){
     rootRef.value.style.position = "absolute"
-    rootRef.value.style.top = (<IQuesConfig>props.config).top
-    rootRef.value.style.left = (<IQuesConfig>props.config).left
+    rootRef.value.style.top = (<IQuesConfig>props.config).style.top + 'px'
+    rootRef.value.style.left = (<IQuesConfig>props.config).style.left + 'px'
   }
 })
 // let inputText = ref<InstanceType<typeof InputText>>()
@@ -28,7 +28,7 @@ function abc(e: MouseEvent){
 }
 
 // script setup 裡面的宣告預設不會 expose
-defineExpose({ GetConfig, test1 })
+defineExpose({ test1 })
 </script>
 
 <style scoped>

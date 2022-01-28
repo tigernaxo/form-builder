@@ -24,13 +24,6 @@ export interface IQuesConfig {
 export interface IQuesRenderObj extends IQuesConfig{
 }
 export interface IQues {
-  GetRenderObj: ()=>any
+  GetRenderObj: ()=> any,
+  GetConfig: ()=> IQuesConfig,
 }
-
-// export function GetConfig(this: any): IQuesConfig{
-//   return {
-//     Type: EQuesType.Input,
-//     top: '',
-//     left: '',
-//   }
-// }
