@@ -17,8 +17,8 @@
       > 
       <!-- 這裡的 dragstart 要跟 template 區塊的分開，這裡不做複製 -->
       <template v-for="(item, idx) in OperEl.itemList" :key="idx">
-        <template v-if="item.Type === QuesType.Input">
-          <ques-input :fb-id="`${item.id}`" :ref="refArr[parseInt(item.id||'-1')]" draggable="true" @dragstart="OperEl.onDragStart($event)" :config="item"></ques-input>
+        <template v-if="item.Type === EQuesType.INPUT">
+          <!-- <ques-input :fb-id="`${item.id}`" :ref="refArr[parseInt(item.id||'-1')]" draggable="true" @dragstart="OperEl.onDragStart($event)" :config="item"></ques-input> -->
         </template>
       </template>
       </div>
@@ -34,7 +34,7 @@
 import { throttle } from 'lodash'
 // import InputText from './components/InputText.vue'
 import {reactive, Ref, ref} from 'vue'
-import { IQuesConfig, QuesType } from './components/QuesCommon'
+import { IQuesConfig, EQuesType } from './components/QuesCommon'
 import QuesInput from './components/QuesInput.vue';
 // To change that behavior so that an element becomes a drop zone or is droppable, 
 // the element must have both ondragover (en-US) and ondrop (en-US) event handler attributes. 
@@ -82,12 +82,13 @@ let TempEl = {
     // console.log(`startX, startY`, startX, startY)
 
     let elRef = ref<InstanceType<typeof QuesInput>>()
-    OperEl.itemList.push({
-        Type: QuesType.Input, 
-        id: `${refArr.length}`, 
-        ref: elRef,
-        top: `${finalY}px`,left: `${finalX}px`
-      });
+    let id = refArr.length + ''
+    // OperEl.itemList.push({
+    //     Type: EQuesType.INPUT, 
+    //     id,
+    //     ref: elRef,
+    //     top: `${finalY}px`,left: `${finalX}px`
+    //   });
     refArr.push(elRef)
   }
 }

@@ -1,6 +1,11 @@
 <template>
 	<div class="row g-0 area-root">
     <div class="col-2 container area-component">
+      <div class="q-pa-md q-gutter-md">
+        <q-badge color="blue">
+          #4D96F2
+        </q-badge>
+      </div>
       <div>
         <!-- <input-text text="inputText" draggable="true" @dragstart="dragInfo.isTemplate = true; dragstartHandler($event)"></input-text>
         <input-text text="inputText1" draggable="true" @dragstart="dragstartHandler($event)"></input-text>
